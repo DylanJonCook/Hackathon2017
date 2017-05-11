@@ -32,7 +32,7 @@ $('.tool').on('click', function ()  {
             .style("fill", this.options.color);
 			
 			var text = theLink.append("text");
-			text.attr("x", 0).attr("y",50).text(this.options.text);			
+			text.attr("x", 0).attr("y",50).style('fill', '#ffffff').text(this.options.text);			
 			var x = 100 - (text._groups[0][0].getBBox().width / 2);
 			text.attr("x", x).attr("y",47)
 		},		
@@ -48,6 +48,11 @@ $('.tool').on('click', function ()  {
 			label.innerHTML = this.options.text;	
 			var x = 100 - (label.getBBox().width / 2);
 			textContainer.attr("x", x).attr("y",47)			
+		},		
+		setLink : function (svg, link) {		
+			var textContainer = d3.select(svg + ' a');
+			this.options.link = link;
+			textContainer.attr("xlink:href", link);			
 		}
 	});
 	
@@ -64,4 +69,7 @@ $('#pill-properties-color').on('change', function (ev) {
 });
 $('#pill-properties-text').on('keyup', function (ev) {
 	$('#pill-mock').pill('setText', '#pill-mock', ev.target.value);
+});
+$('#pill-properties-link').on('keyup', function (ev) {
+	$('#pill-mock').pill('setLink', '#pill-mock', ev.target.value);
 });
