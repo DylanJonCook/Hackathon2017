@@ -1,0 +1,13 @@
+#workspace {
+	border: 1px solid red;
+	width:500px;
+	height:500px;
+	float: left;
+}
+
+#toolbox {
+	border: 1px solid red;
+	width:200px;
+	height:500px;
+	float: right;
+}

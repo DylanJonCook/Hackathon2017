@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<link type="text/css" href="styles/styles.css" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	</head>
+	<body>
+		<div id="canvas">
+			<svg id="workspace">
+				<defs>
+					<linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+						<stop offset="0%" style="stop-color:rgb(255,255,0);stop-opacity:1" />
+						<stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1" />
+					</linearGradient>
+				</defs>
+		 </svg>
+		</div>
+		<div id="toolbox">
+			<div class="tool" data-props="pill-properties">
+				<svg id="pill-mock"></svg>
+			</div>
+			<div class="tool" data-props="arrow-properties">
+				<svg id="arrow-mock"></svg>
+			</div>
+			<div class="tool" data-props="image-properties">
+				<svg id="immage-mock"></svg>
+			</div>
+			<div id="properties">
+				<div id="pill-properties" style='display: none;'>
+					Text: <input type="text" id="pill-properties-text"><br />
+					Link: <input type="text"><br />
+					Color: <select id="pill-properties-color">
+					   <option value="red" name="red">red</option>
+					   <option value="green" name="green">green</option>
+					   <option value="blue" name="blue">blue</option>
+				   </select><br />
+				</div>
+				<div id="arrow-properties" style='display: none;'>
+				   Line style:				   
+				   <select id="arrow-properties-line">
+					   <option value="dashed" name="dashed">dashed</option>
+					   <option value="dotted" name="dotted">dotted</option>
+					   <option value="solid" name="solid">solid</option>
+				   </select><br />
+				   Head style:				   
+				   <select id="arrow-properties-line">
+					   <option value="arrow" name="arrow">arrow</option>
+					   <option value="tab" name="tab">tab</option>
+				   </select>
+				</div>
+			</div>
+		</div>
+		<script src="scripts/main.js"></script>
+	</body>
+</html>
