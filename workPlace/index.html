@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html land="es">
+<head>
+ <meta charset="utf-8" />
+ <title>Drag & drop</title>
+<script
+  src="https://code.jquery.com/jquery-1.6.4.js"
+  integrity="sha256-VJZPi1gK15WpYvsnBmcV0yga4a0Toov4rt1diFnrrjc="
+  crossorigin="anonymous"></script>
+ <link rel="stylesheet" type="text/css" href="estilo.css">
+
+ <script type="text/javascript">
+
+    var currentCloneElemet = 0; 
+
+    function start(e) {
+      e.dataTransfer.effecAllowed = 'copyMove';
+      e.dataTransfer.setData("Data", e.target.id);
+      e.dataTransfer.setDragImage(e.target, 0, 0); 
+      e.target.setAttributeNS(null, "filter", "url(#softShadow");
+      e.target.style.opacity = '0.3'; 
+    }
+
+    function end(e){
+      e.target.style.opacity = '';
+      e.dataTransfer.clearData("Data");
+    }
+
+    function enter(e) {
+
+    }
+
+    function release(e) {
+      e.target.style.border = '';
+      e.target.removeAttributeNS(null,"filter");
+    }
+
+    function over(e) {
+      var dragElement = e.dataTransfer.getData("Data"); 
+      var id = e.target.id;
+            
+      if (id == 'toolbox'){
+        return false;        // You can not drop the toolbox
+      }
+
+      if (id == 'workBoard'){
+        return false; 
+      } 
+  
+      if (id == 'litter')
+        return false; 
+        
+    }
+
+    function remove(e){
+      var dragElement = document.getElementById(e.dataTransfer.getData("Data")); 
+      var from = $(dragElement).attr("data-from");
+      
+      if (from == 'workBoard')
+        dragElement.parentNode.removeChild(dragElement); 
+    }
+
+    function clone(e){
+        var data = e.dataTransfer.getData("Data");
+        var dragElement = document.getElementById(data);
+        dragElement.style.opacity = '';
+        var newElement = dragElement.cloneNode(true);
+        newElement.id = "CloneElem" + currentCloneElemet;
+        currentCloneElemet ++;
+
+        e.target.appendChild(newElement);
+        newElement.setAttribute("data-from", "workBoard");
+    }
+
+ </script>
+</head>
+<body>
+<header>
+    <h1>Drag & Drop in HTML5 </h1>
+  </header>
+
+  <section>
+    <div id="toolbox" ondragenter="return enter(event)" ondragover="return over(event)" ondragleave="return release(event)" ondrop="return drop(event)">
+
+      <div class="square" id="draggable1" data-from="toolbox" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+        1
+      </div>  
+      <div class="square" id="draggable2" data-from="toolbox" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+        2
+      </div>
+      <div class="square" id="draggable3" data-from="toolbox" draggable="true" ondragstart="start(event)" ondragend="end(event)">
+        3
+      </div>
+    </div>
+    <div id="workBoard" ondragenter="return enter(event)" ondragover="return over(event)" ondragleave="return release(event)" ondrop="return clone(event)">
+      Cloner
+    </div>
+    <div id="litter" ondragenter="return enter(event)" ondragover="return over(event)" ondragleave="return release(event)" ondrop="return remove(event)">Litter</div>
+  </section>
+</body>
+</html>

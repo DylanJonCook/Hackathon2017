@@ -1,0 +1,50 @@
+body{
+  background: #303030;
+}
+h1 {
+  color: #CA7218;
+}
+
+#toolBox, #workBoard, #litter {
+    float: left;
+    width: 90px;
+    height: 90px;
+    padding: 10px;
+    margin: 10px;
+}
+
+#toolBox{
+    background: #55f;
+}
+
+#workBoard {
+    background: #f55;
+}
+
+#litter {
+    background: #5ff;
+}
+
+.square {
+    background: #288;
+    border: 2px solid #882;
+    width: 5px;
+    height: 5px;
+    padding: 0 10px 15px;
+    margin: 5px;
+}
+
+#draggable1 {
+    background: #228;
+    border: 2px solid #822;
+}
+
+#draggable2 {
+    background: #282;
+    border: 2px solid #228;
+}
+
+#draggable3 {
+    background: #822;
+    border: 2px solid #282;
+}
