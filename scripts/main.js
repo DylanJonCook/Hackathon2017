@@ -237,6 +237,7 @@ $('#pill-properties-link').on('keyup', function (ev) {
       dataTransfer.setData("Data", e.target.id);
       dataTransfer.setDragImage(e.target, 0, 0); 
       e.target.style.opacity = '0.3'; 
+
     }
 
     function dragEnd(e){
@@ -274,7 +275,7 @@ $('#pill-properties-link').on('keyup', function (ev) {
       var dragElement = document.getElementById(dataTransfer.getData("Data")); 
       var from = $(dragElement).attr("data-from");
       
-      if (from == 'workBoard')
+      if (from == 'workspace')
         dragElement.parentNode.removeChild(dragElement); 
     }
 
@@ -299,8 +300,9 @@ $('#pill-properties-link').on('keyup', function (ev) {
           currentCloneElemet ++;
 
           e.target.appendChild(newElement);
-          newElement.setAttribute("data-from", "workBoard");
-          newElement.setAttribute("ondragstart", "selectElement(evt)");
+          newElement.setAttribute("data-from", "workspace");
+		  
+		  newElement.setAttribute("ondragstart", "selectElement(evt)");
 		  $(newElement).draggable();
         }
     }
@@ -309,26 +311,33 @@ $('#pill-properties-link').on('keyup', function (ev) {
         var currentX = 0;
         var currentY = 0;
 		
-	function moveElement(evt) {
-	
-	  var dx = evt.clientX - currentX;
-	  var dy = evt.clientY - currentY;
-	  	  
-	  var currentDx =  parseInt(selectedElement.getAttributeNS(null, "transform").match(/\d+/g)[0]) + dx;
-	  var currentDy =  parseInt(selectedElement.getAttributeNS(null, "transform").match(/\d+/g)[1]) + dy;
-	  selectedElement.setAttributeNS(null, "transform", "translate("+currentDx+","+currentDy+")");
-	  currentX = evt.clientX;
-	  currentY = evt.clientY;
+	var selectedSVGElement = null;
+		
+	function moveElement(evt) {	  		  
+		  var dx = evt.clientX - currentX;
+		  var dy = evt.clientY - currentY;
+			  
+		  var currentDx =  parseInt(selectedElement.getAttributeNS(null, "transform").match(/\d+/g)[0]) + dx;
+		  var currentDy =  parseInt(selectedElement.getAttributeNS(null, "transform").match(/\d+/g)[1]) + dy;
+		  selectedElement.setAttributeNS(null, "transform", "translate("+currentDx+","+currentDy+")");
+		  currentX = evt.clientX;
+		  currentY = evt.clientY;	  
 	}
 	
 	function selectElement(evt) {
-	  selectedElement = evt.target;
-	  currentX = evt.clientX;
-	  currentY = evt.clientY;
-	  
-	  selectedElement.setAttributeNS(null, "onmousemove", "moveElement(evt)");
-	  selectedElement.setAttributeNS(null, "onmouseout", "deselectElement(evt)");
-	  selectedElement.setAttributeNS(null, "onmouseup", "deselectElement(evt)");
+		if($('#deleteEnabled')[0].checked)
+		{
+			evt.originalEvent.target.parentElement.remove(evt.originalEvent.target)
+		}
+	  else{
+		  selectedElement = evt.target;
+		  currentX = evt.clientX;
+		  currentY = evt.clientY;
+		  
+		  selectedElement.setAttributeNS(null, "onmousemove", "moveElement(evt)");
+		  selectedElement.setAttributeNS(null, "onmouseout", "deselectElement(evt)");
+		  selectedElement.setAttributeNS(null, "onmouseup", "deselectElement(evt)");
+	  }
 	}
 		
 	function deselectElement(evt) {
