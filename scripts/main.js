@@ -20,10 +20,10 @@ $('.tool').on('click', function ()  {
 		_init : function() {},
 		draw : function (svg) {			
 			var svg = d3.select(svg),
-				group = svg.append("g");//.attr("transform", "translate(0,0)")			
+				group = svg.append("g").attr("transform", "translate(0,0)")					
 			
 			var theLink = group.append("svg:a")
-			.attr("xlink:href", this.options.link );
+			.attr("xlink:href", '#' );
 			
 			var oval = theLink.append("ellipse")
             .attr("cx", 50)
@@ -33,11 +33,13 @@ $('.tool').on('click', function ()  {
             .style("stroke", "#BCBBB6")
             .style("stroke-width", "1px")
             .style("fill", this.options.color);
-			
+		
 			var text = theLink.append("text");
 			text.attr("x", 0).attr("y",50).style('fill', '#ffffff').text(this.options.text);			
 			var x = 50 - (text._groups[0][0].getBBox().width / 2);
 			text.attr("x", x).attr("y",30)
+			
+			svg.attr('data-from', "toolbox");
 		},		
 		setColor : function (svg, color) {
 			var svgContainer = d3.select(svg + ' ellipse');
@@ -75,8 +77,10 @@ $('.tool').on('click', function ()  {
 		},		
 		create : function (svg) {	
 			var svg = d3.select(svg);
+			svg.attr('data-from', "toolbox");
 			var group = svg.append("g");
 			group.attr("id", "g1");
+			group.attr("transform", "translate(0,0)")		
 			
 			var o = this.options;
 			var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -90,18 +94,7 @@ $('.tool').on('click', function ()  {
 			group._groups[0][0].appendChild(path);				
 		},
 		draw : function (clickedThingy) {
-			var o = this.options;
-			// line.l1.setAttributeNS(null, "x1", point.p1.x);
-			// line.l1.setAttributeNS(null, "y1", point.p1.y);
-			// line.l1.setAttributeNS(null, "x2", point.c1.x);
-			// line.l1.setAttributeNS(null, "y2", point.c1.y);
-			
-			// // control line 2
-			// var c2 = (point.c2 ? "c2" : "c1");
-			// line.l2.setAttributeNS(null, "x1", point.p2.x);
-			// line.l2.setAttributeNS(null, "y1", point.p2.y);
-			// line.l2.setAttributeNS(null, "x2", point[c2].x);
-			// line.l2.setAttributeNS(null, "y2", point[c2].y);
+			var o = this.options;		
 			
 			// curve
 			var d = 
@@ -123,13 +116,7 @@ $('.tool').on('click', function ()  {
 				x: parseInt(c[i].getAttributeNS(null,"cx"),10),
 				y: parseInt(c[i].getAttributeNS(null,"cy"),10)
 			};
-		}
-		
-		// lines
-		// line.l1 = group.getElementById("l1");
-		// line.l2 = group.getElementById("l2");
-		// line.curve = group.getElementById("curve");
-			
+		}			
 		// event handlers
 		svg.onmousedown = svg.onmousemove = svg.onmouseup = svg.onmouseout = $.proxy(this.Drag, this);
 		svg.ontouchstart = svg.ontouchmove = svg.ontouchend = $.proxy(this.Drag, this);		
@@ -214,11 +201,10 @@ $('.tool').on('click', function ()  {
 $( document ).ready(function(){
 	$('#pill-mock').pill({color: 'red', text: 'Text', link: 'http://www.google.com'});
 	$('#pill-mock').pill('draw', $('#pill-mock')[0]);
-	$('#pill-mock').draggable();
 	
-	$('#arrow-mock').arrow({x1:0,y1:50,cx:50,cy:0,x2:100,y2:50,style:'',head:''});
+	$('#arrow-mock').arrow({x1:5,y1:60,cx:50,cy:20,x2:100,y2:60,style:'',head:''});
 	$('#arrow-mock').arrow('create', $('#arrow-mock')[0]);
-	$('#arrow-mock').draggable();
+	
 	$('#arrow-mock').arrow('setupForEdit', $('#g1')[0], $('#arrow-mock')[0]);
 	
 });
@@ -238,153 +224,134 @@ $('#pill-properties-link').on('keyup', function (ev) {
 	$('#pill-mock').pill('setLink', '#pill-mock', ev.target.value);
 });
 
+
+
+
+
+
+    var currentCloneElemet = 0; 
+
+    function dragStart(e) {
+	  var dataTransfer = e.originalEvent.dataTransfer;
+      dataTransfer.effectAllowed = 'copyMove';
+      dataTransfer.setData("Data", e.target.id);
+      dataTransfer.setDragImage(e.target, 0, 0); 
+      e.target.style.opacity = '0.3'; 
+    }
+
+    function dragEnd(e){
+	  var dataTransfer = e.originalEvent.dataTransfer;
+      e.target.style.opacity = '';
+	  if(dataTransfer.clearData)
+	  {
+		dataTransfer.clearData("Data");
+	  }
+    }
+
+    function dragRelease(e) {
+      e.target.style.border = '';
+    }
+
+    function dragOver(e) {
+	  var dataTransfer = e.originalEvent.dataTransfer;
+      var dragElement = dataTransfer.getData("Data"); 
+      var id = e.target.id;
+      e.preventDefault();
+      if (id == 'toolbox'){
+        return false;        // You can not drop the toolbox
+      }
+
+      if (id == 'workspace'){
+        return false; 
+      } 
+  
+      if (id == 'litter')
+        return false;         
+    }
+
+    function remove(e){
+	  var dataTransfer = e.originalEvent.dataTransfer;
+      var dragElement = document.getElementById(dataTransfer.getData("Data")); 
+      var from = $(dragElement).attr("data-from");
+      
+      if (from == 'workBoard')
+        dragElement.parentNode.removeChild(dragElement); 
+    }
+
+    function clone(e){
+		var dataTransfer = e.originalEvent.dataTransfer;
+        var data = dataTransfer.getData("Data");
+        var dragElement = document.getElementById(data);		
+		
+        var from = $(dragElement).attr("data-from");
+        if (from == "toolbox")
+        {
+          dragElement.style.opacity = '';
+          var newElement = $(dragElement).children().first()[0].cloneNode(true);
+		  
+		  if(dragElement.id == "arrow-mock")
+		  {
+			 var group = newElement.children;
+			 $(group).remove("circle");
+		  }
+		
+          newElement.id = "CloneElem" + currentCloneElemet;
+          currentCloneElemet ++;
+
+          e.target.appendChild(newElement);
+          newElement.setAttribute("data-from", "workBoard");
+          newElement.setAttribute("ondragstart", "selectElement(evt)");
+		  $(newElement).draggable();
+        }
+    }
+
+    var selectedElement = 0;
+        var currentX = 0;
+        var currentY = 0;
+		
+	function moveElement(evt) {
+	
+	  var dx = evt.clientX - currentX;
+	  var dy = evt.clientY - currentY;
+	  	  
+	  var currentDx =  parseInt(selectedElement.getAttributeNS(null, "transform").match(/\d+/g)[0]) + dx;
+	  var currentDy =  parseInt(selectedElement.getAttributeNS(null, "transform").match(/\d+/g)[1]) + dy;
+	  selectedElement.setAttributeNS(null, "transform", "translate("+currentDx+","+currentDy+")");
+	  currentX = evt.clientX;
+	  currentY = evt.clientY;
+	}
+	
+	function selectElement(evt) {
+	  selectedElement = evt.target;
+	  currentX = evt.clientX;
+	  currentY = evt.clientY;
+	  
+	  selectedElement.setAttributeNS(null, "onmousemove", "moveElement(evt)");
+	  selectedElement.setAttributeNS(null, "onmouseout", "deselectElement(evt)");
+	  selectedElement.setAttributeNS(null, "onmouseup", "deselectElement(evt)");
+	}
+		
+	function deselectElement(evt) {
+	  if(selectedElement != 0){
+		  selectedElement.removeAttributeNS(null, "onmousemove");
+		  selectedElement.removeAttributeNS(null, "onmouseout");
+		  selectedElement.removeAttributeNS(null, "onmouseup");
+		  selectedElement = 0;
+	  }
+
+	}
+
+$('#pill-mock').on('dragstart', function(event) {dragStart(event)}).on('dragend', function(event) {dragEnd(event)});
+$('#arrow-mock').on('dragstart', function(event) {dragStart(event)}).on('dragend', function(event) {
+	dragEnd(event)});
+$('#workspace').on('dragover', function(event) {
+	dragOver(event)}).on('dragenter', function(event){ }).on('dragleave', function (event) {dragRelease(event)}).on('drop', function(event) {	
+		clone(event)});
+
+
+
 ////////////////////////////////////////////////////////////////
 //
 //  set up the controlls for arrow properties
 //
 ////////////////////////////////////////////////////////////////
-
-// (function() {
-
-	// var container, svg, code, point = {}, line = {}, fill = false, drag = null, dPoint, maxX, maxY;
-    // var p1x, p1y, p2x, p2y, cx, cy;
-	
-	// // define initial points
-	// function Init() {
-
-		// var c = svg.getElementsByTagName("circle");
-		// for (var i = 0; i < c.length; i++) {
-			// point[c[i].getAttributeNS(null,"id")] = {
-				// x: parseInt(c[i].getAttributeNS(null,"cx"),10),
-				// y: parseInt(c[i].getAttributeNS(null,"cy"),10)
-			// };
-		// }
-		
-		// // lines
-		// line.l1 = svg.getElementById("l1");
-		// line.l2 = svg.getElementById("l2");
-		// line.curve = svg.getElementById("curve");
-		
-		// // code
-		// code = document.getElementById("code");
-	
-		// // event handlers
-		// svg.onmousedown = svg.onmousemove = svg.onmouseup = Drag;
-		// svg.ontouchstart = svg.ontouchmove = svg.ontouchend = Drag;
-		
-		// DrawSVG();
-	// }
-	
-	
-	// // draw curve
-	// function DrawSVG() {
-	
-		// // control line 1
-		// line.l1.setAttributeNS(null, "x1", point.p1.x);
-		// line.l1.setAttributeNS(null, "y1", point.p1.y);
-		// line.l1.setAttributeNS(null, "x2", point.c1.x);
-		// line.l1.setAttributeNS(null, "y2", point.c1.y);
-		
-		// // control line 2
-		// var c2 = (point.c2 ? "c2" : "c1");
-		// line.l2.setAttributeNS(null, "x1", point.p2.x);
-		// line.l2.setAttributeNS(null, "y1", point.p2.y);
-		// line.l2.setAttributeNS(null, "x2", point[c2].x);
-		// line.l2.setAttributeNS(null, "y2", point[c2].y);
-		
-		// // curve
-		// var d = 
-			// "M"+point.p1.x+","+point.p1.y+" "+Q+
-			// point.c1.x+","+point.c1.y+" "+
-			// (point.c2 ? point.c2.x+","+point.c2.y+" " : "")+
-			// point.p2.x+","+point.p2.y;
-		// line.curve.setAttributeNS(null, "d", d);
-		
-		// // show code
-		// if (code) {
-			// code.textContent = '<path d="'+d+'" />';
-		// }
-	// }
-	
-	
-	// // drag event handler
-	// function Drag(e) {
-		
-		// e.stopPropagation();
-		// var t = e.target, id = t.id, et = e.type, m = MousePos(e);
-	
-		// // toggle fill class
-		// if (!drag && et == "mousedown" && id == "curve") {		
-			// DrawSVG();
-		// }
-	
-		// // start drag
-		// if (!drag && typeof(point[id]) != "undefined" && (et == "mousedown" || et == "touchstart")) {
-			// drag = t;
-			// dPoint = m;
-		// }
-		
-		// // drag
-		// if (drag && (et == "mousemove" || et == "touchmove")) {
-			// id = drag.id;
-			// point[id].x += m.x - dPoint.x;
-			// point[id].y += m.y - dPoint.y;
-			// dPoint = m;
-			// drag.setAttributeNS(null, "cx", point[id].x);
-			// drag.setAttributeNS(null, "cy", point[id].y);
-			// DrawSVG();
-		// }
-		
-		// // stop drag
-		// if (drag && (et == "mouseup" || et == "touchend")) {
-			// drag = null;
-		// }
-	
-	// }
-
-	
-	// // mouse position
-	// function MousePos(event) {
-		// return {
-			// x: Math.max(0, Math.min(maxX, event.pageX)),
-			// y: Math.max(0, Math.min(maxY, event.pageY))
-		// }
-	// }
-	
-	// // start
-	// function setupForEdit(elem) {
-		// container = $('#workspace');
-		// if (container) {
-			// maxX = container.width-1;
-			// maxY = container.height-1;
-			// svg = container.contentDocument;
-			
-			// // Setup points for circles and lines
-			
-			// var points = $(elem).getAttribute('d').split(" ");
-			// var start = points[0];
-			// p1x = start.split(",")[0].match(/\d+$/g)[0];
-			// p1y = start.split(",")[1];
-			
-			// var middle = points[1];
-			// c1x = middle.split(",")[0].match(/\d+$/g)[0];
-			// c2y = middle.split(",")[1];
-			
-			// var end = points[2];
-			// p2x = end.split(",")[0];
-			// p2y = end.split(",")[1];
-			
-			// // Draw circles and lines
-			// var svg = d3.select(svg),
-				// group = svg.append("g");
-			
-			// group.append("line").attr("x1", p1x).attr("y1", p1y).attr("x2", c1x).attr("y2", c1y).attr("id", "l1");
-			// group.append("line").attr("x1", p2x).attr("y1", p2y).attr("x2", c1x).attr("y2", c1y).attr("id", "l2");
-			
-			// Init();
-		// }
-	// }
-	
-// })();
-
- 

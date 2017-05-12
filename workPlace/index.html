@@ -28,14 +28,14 @@
       e.dataTransfer.clearData("Data");
     }
 
-    function enter(e) {
-
-    }
-
     function release(e) {
       e.target.style.border = '';
       //e.target.removeAttributeNS(null,"filter");
     }
+	
+	function enter(e)
+	{
+	}
 
     function over(e) {
       var dragElement = e.dataTransfer.getData("Data"); 
